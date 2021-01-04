@@ -91,4 +91,4 @@ app.layout = html.Div(
 # Run the app
 if __name__ == "__main__":
     print(df.info())
-    app.run_server(debug=True)
+    app.run_server(debug=False)
