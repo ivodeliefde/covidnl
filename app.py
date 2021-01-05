@@ -29,7 +29,10 @@ df_total = (
 )
 
 # Initialise the app
-app = dash.Dash(external_stylesheets=[dbc.themes.JOURNAL])
+app = dash.Dash(
+    external_stylesheets=[dbc.themes.JOURNAL, "style.css"],
+    assets_folder = "assets"
+)
 server = app.server
 
 # Define the plots
