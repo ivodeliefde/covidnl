@@ -87,8 +87,10 @@ app.layout = html.Div(
     ]
 )
 
+def server():
+    app.run_server(debug=False)
+
 
 # Run the app
 if __name__ == "__main__":
-    print(df.info())
-    app.run_server(debug=False)
+    server()
