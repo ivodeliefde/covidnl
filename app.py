@@ -21,6 +21,14 @@ df_province = (
     .sum()
     .reset_index()
 )
+df_total = (
+    df.groupby(["Date_of_publication"])[
+        ["Date_of_publication", "Total_reported"]
+    ]
+    .sum()
+    .reset_index()
+)
+
 
 # Initialise the app
 app = dash.Dash(external_stylesheets=[dbc.themes.JOURNAL])
@@ -74,10 +82,9 @@ app.layout = html.Div(
                             config={"displayModeBar": False},
                             animate=True,
                             figure=px.line(
-                                df_province,
+                                df_total,
                                 x="Date_of_publication",
-                                y="Total_reported",
-                                color="Province",
+                                y="Total_reported"
                             ),
                         )
                     ],
