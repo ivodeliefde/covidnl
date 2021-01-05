@@ -2,6 +2,15 @@ html {
     padding: 5px;
 }
 
-.left {
-    padding-left: 20px;
+.header {
+    background-color: ;
+}
+
+.datatable {
+    padding-left: 1vw;
+    padding-top: 4%;
+}
+
+#totals_table {
+    vertical-align:middle;
 }
