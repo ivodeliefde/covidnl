@@ -87,10 +87,10 @@ app.layout = html.Div(
     ]
 )
 
-def server():
+def main(**kwargs):
     app.run_server(debug=False)
 
 
 # Run the app
 if __name__ == "__main__":
-    server()
+    main()
