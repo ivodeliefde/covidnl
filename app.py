@@ -20,6 +20,7 @@ df_province = (
     ]
     .sum()
     .reset_index()
+
 )
 df_total = (df.groupby(["Date_of_publication"])[
         ["Date_of_publication", "Total_reported", "Deceased"]
