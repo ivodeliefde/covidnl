@@ -29,11 +29,8 @@ df_total = (
     .reset_index()
 )
 
-
 # Initialise the app
 app = dash.Dash(external_stylesheets=[dbc.themes.JOURNAL])
-
-print(df.head().to_dict("records"))
 
 # Define the app
 app.layout = html.Div(
