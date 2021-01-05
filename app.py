@@ -16,11 +16,16 @@ df = pd.read_csv(
 df["Date_of_publication"] = pd.to_datetime(df["Date_of_publication"])
 df_province = (
     df.groupby(["Date_of_publication", "Province"])[
-        ["Date_of_publication", "Total_reported"]
+        ["Date_of_publication", "Total_reported", "Deceased"]
     ]
     .sum()
     .reset_index()
 )
+df_total = (df.groupby(["Date_of_publication"])[
+        ["Date_of_publication", "Total_reported", "Deceased"]
+    ]
+    .sum()
+    .reset_index())
 
 # Initialise the app
 app = dash.Dash(external_stylesheets=[dbc.themes.JOURNAL])
@@ -70,14 +75,13 @@ app.layout = html.Div(
                     className="col-md-9",
                     children=[
                         dcc.Graph(
-                            id="province",
+                            id="cases",
                             config={"displayModeBar": False},
                             animate=True,
                             figure=px.line(
-                                df_province,
+                                df_total,
                                 x="Date_of_publication",
-                                y="Total_reported",
-                                color="Province",
+                                y="Total_reported"
                             ),
                         )
                     ],
@@ -88,7 +92,12 @@ app.layout = html.Div(
 )
 
 
+def server(**kwargs):
+    app.run_server(**kwargs)
+
+
 # Run the app
 if __name__ == "__main__":
     print(df.info())
-    app.run_server(debug=False)
+    server(debug=False)
+
