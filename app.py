@@ -31,6 +31,7 @@ df_total = (
 
 # Initialise the app
 app = dash.Dash(external_stylesheets=[dbc.themes.JOURNAL])
+server = app.server
 
 # Define the app
 app.layout = html.Div(
