@@ -9,6 +9,10 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import plotly.express as px
 
+from flask import request
+
+from .server import server
+
 # Load data
 df = pd.read_csv(
     r"https://data.rivm.nl/covid-19/COVID-19_aantallen_gemeente_per_dag.csv", sep=";"
@@ -30,10 +34,14 @@ df_total = (
 
 # Initialise the app
 app = dash.Dash(
-    external_stylesheets=[dbc.themes.JOURNAL, "style.css"],
-    assets_folder = "assets"
+    external_stylesheets=[dbc.themes.JOURNAL, "https://covidnldash.herokuapp.com/styles/style.css"],
+    assets_folder = "static",
+    name='Covid-19 NL',
+    # sharing=True,
+    server=server,
+    url_base_pathname='/'
 )
-server = app.server
+
 
 # Define the plots
 def add_marker(fig, date, text, xshift=40, yshift=0):
