@@ -4,9 +4,16 @@ from os.path import join, dirname, realpath
 import json
 import pandas as pd
 from flask import Flask, send_file
-import requests
+from flask_caching import Cache
 
 server = Flask(__name__, static_folder=join(dirname(realpath(__file__)), "static"))
+cache = Cache(server, config={
+    'CACHE_TYPE': 'filesystem',
+    'CACHE_DIR': join(dirname(realpath(__file__)), "tmp")
+})
+server.config.suppress_callback_exceptions = True
+
+timeout = 300
 
 # Load data
 df = pd.read_csv(

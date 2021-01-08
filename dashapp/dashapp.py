@@ -10,7 +10,7 @@ import dash_bootstrap_components as dbc
 import plotly.express as px
 from dash.dependencies import Input, Output
 
-from .server import server, df, df_total, municipalities
+from .server import server, cache, timeout, df, df_total, municipalities
 
 
 # Initialise the app
@@ -174,6 +174,9 @@ app.layout = html.Div(
 
 # Callbacks
 @app.callback(Output("choropleth_abs", "figure"), [Input("date", "date")])
+@cache.memoize(
+    # timeout=timeout  # in seconds
+)
 def display_choropleth(dto):
     dt = dto.split("T")[0]
     col = "Total_reported"
@@ -195,13 +198,16 @@ def display_choropleth(dto):
     )
 
     fig_map.update_layout(
-        margin={"r": 0, "t": 100, "l": 0, "b": 0})
+        margin={"r": 0, "t": 50, "l": 0, "b": 0})
 
     return fig_map
 
 
 # Callbacks
 @app.callback(Output("choropleth_perc", "figure"), [Input("date", "date")])
+@cache.memoize(
+    # timeout=timeout   # in seconds
+)
 def display_choropleth_perc(dto):
     dt = dto.split("T")[0]
     col = "Total_reported_per_100000"

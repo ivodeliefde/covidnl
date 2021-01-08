@@ -7,3 +7,5 @@ dash-table==4.11.1
 pandas
 gunicorn==20.0.4
 requests
+flask
+flask_caching
