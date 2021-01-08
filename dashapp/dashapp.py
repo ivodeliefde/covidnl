@@ -17,8 +17,8 @@ from .server import server, df, df_total, municipalities
 app = dash.Dash(
     external_stylesheets=[
         dbc.themes.JOURNAL,
-        # "https://covidnldash.herokuapp.com/styles/style.css",
-        "http://localhost:5000/styles/style.css",
+        "https://covidnldash.herokuapp.com/styles/style.css",
+        # "http://localhost:5000/styles/style.css",
     ],
     assets_folder="static",
     name="Covid-19 NL",
