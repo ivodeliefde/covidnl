@@ -233,8 +233,8 @@ def display_choropleth(dto):
         zoom=6,
         center={"lat": 52.1561, "lon": 5.3878},
         opacity=0.5,
-        labels={"Number of cases": "Total_reported_per_100000"},
-        title=f'Total reported per 100000 on {df["Date_of_publication"].max().strftime("%d-%m-%Y")}'
+        labels={"Number of cases": "Total_reported"},
+        title=f'Total reported on {df["Date_of_publication"].max().strftime("%d-%m-%Y")}'
 
     )
 

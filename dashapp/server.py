@@ -54,7 +54,7 @@ df_total = (
 df_total["Total_reported_week"] = df_total["Total_reported"].rolling(7).mean()
 df_total["Total_reported_per_100000_week"] = df_total["Total_reported_per_100000"].rolling(7).mean()
 
-with open(join(server.static_folder, "data", "municipalities_simplified.geojson")) as f:
+with open(join(server.static_folder, "data", "municipalities_simplified_2.geojson")) as f:
     municipalities = json.load(f)
 
 
