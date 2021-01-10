@@ -1,34 +1,18 @@
 # Covid NL dashboard.
-
 import datetime
-import pandas as pd
 import dash
 import dash_table
 import dash_html_components as html
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
-import plotly.express as px
 from dash.dependencies import Input, Output
+import plotly.express as px
 
-from .server import server, cache, timeout, df, df_total, municipalities
+from .server import df, municipalities
 
-
-# Initialise the app
-app = dash.Dash(
-    external_stylesheets=[
-        dbc.themes.JOURNAL,
-        "https://covidnldash.herokuapp.com/styles/style.css",
-        # "http://localhost:5000/styles/style.css",
-    ],
-    assets_folder="static",
-    name="Covid-19 NL",
-    # sharing=True,
-    server=server,
-    url_base_pathname="/",
-)
+from .server import server, cache, df, df_total
 
 
-# Define the plots
 def add_marker(fig, date, text, xshift=0, yshift=0, bgcolor="#EBFCFF"):
     fig.add_vline(x=date, line_dash="dashdot")
     fig.add_annotation(
@@ -51,11 +35,6 @@ fig_total = px.line(
 fig_total.update_layout(
     xaxis_range=["2020-01-01", datetime.datetime.now() + datetime.timedelta(days=25)]
 )
-fig_total.add_scatter(x=df_total['Date_of_publication'],
-                      y=df_total['Total_reported_week'],
-                      mode='lines',
-                      opacity=0.7,
-                      name="Weekly Average")
 add_marker(fig_total, "2020-01-23", "First<br>Case EU", yshift=-30)
 add_marker(fig_total, "2020-02-27", "First<br>Case NL", yshift=5)
 add_marker(fig_total, "2020-04-23", "Intelligent<br>Lockdown", yshift=45)
@@ -65,7 +44,68 @@ add_marker(fig_total, "2020-12-14", "Strict<br>Lockdown")
 add_marker(
     fig_total, "2021-01-05", "Start<br>Vaccination<br>Campaign", xshift=10, yshift=50
 )
+fig_total.add_scatter(x=df_total['Date_of_publication'],
+                      y=df_total['Total_reported_week'],
+                      mode='lines',
+                      opacity=0.7,
+                      name="Weekly Average")
 
+fig_map_abs = px.choropleth_mapbox(
+    df.loc[df["Date_of_publication"] == df["Date_of_publication"].max(), :],
+    geojson=municipalities,
+    locations="Municipality_name",
+    featureidkey="properties.gemeentenaam",
+    color= "Total_reported",
+    color_continuous_scale="Viridis",
+    range_color=(0, 100),
+    mapbox_style="carto-positron",
+    zoom=6,
+    center={"lat": 52.1561, "lon": 5.3878},
+    opacity=0.5,
+    labels={"Number of cases": "Total_reported"},
+    title=f'Total reported on {df["Date_of_publication"].max().strftime("%d-%m-%Y")}'
+)
+
+fig_map_abs.update_layout(
+        margin={"r": 0, "t": 50, "l": 0, "b": 0})
+
+# print(df["Date_of_publication"], df["Date_of_publication"].max(), df["Date_of_publication"] == df["Date_of_publication"].max())
+
+fig_map_perc = px.choropleth_mapbox(
+        df.loc[df["Date_of_publication"] == df["Date_of_publication"].max(), :],
+        geojson=municipalities,
+        locations="Municipality_name",
+        featureidkey="properties.gemeentenaam",
+        color="Total_reported_per_100000",
+        color_continuous_scale="Viridis",
+        range_color=(0, 100),
+        mapbox_style="carto-positron",
+        zoom=6,
+        center={"lat": 52.1561, "lon": 5.3878},
+        opacity=0.5,
+        labels={"Number of cases": "Total_reported_per_100000"},
+        title=f'Total reported per 100000 on {df["Date_of_publication"].max().strftime("%d-%m-%Y")}'
+    )
+
+fig_map_perc.update_layout(
+        margin={"r": 0, "t": 50, "l": 0, "b": 0}
+    )
+
+
+
+# Initialise the app
+app = dash.Dash(
+    external_stylesheets=[
+        dbc.themes.JOURNAL,
+        "https://covidnldash.herokuapp.com/styles/style.css",
+        # "http://localhost:5000/styles/style.css",
+    ],
+    assets_folder="static",
+    name="Covid-19 NL",
+    # sharing=True,
+    server=server,
+    url_base_pathname="/",
+)
 
 # Define the app
 app.layout = html.Div(
@@ -154,7 +194,7 @@ app.layout = html.Div(
                     children=[
                         dcc.Graph(
                             id="choropleth_abs",
-                            # figure=fig_map,
+                            figure=fig_map_abs,
                         )
                     ],
                 ),
@@ -163,7 +203,7 @@ app.layout = html.Div(
                     children=[
                         dcc.Graph(
                             id="choropleth_perc",
-                            # figure=fig_map,
+                            figure=fig_map_perc,
                         )
                     ],
                 ),
@@ -172,35 +212,37 @@ app.layout = html.Div(
     ]
 )
 
+
 # Callbacks
 @app.callback(Output("choropleth_abs", "figure"), [Input("date", "date")])
 @cache.memoize(
-    # timeout=timeout  # in seconds
+    # timeout=timeout   # in seconds
 )
 def display_choropleth(dto):
     dt = dto.split("T")[0]
-    col = "Total_reported"
 
-    fig_map = px.choropleth_mapbox(
+    fig_map_abs = px.choropleth_mapbox(
         df.loc[df["Date_of_publication"] == dt, :],
         geojson=municipalities,
         locations="Municipality_name",
         featureidkey="properties.gemeentenaam",
-        color=col,
+        color="Total_reported",
         color_continuous_scale="Viridis",
         range_color=(0, 100),
         mapbox_style="carto-positron",
         zoom=6,
         center={"lat": 52.1561, "lon": 5.3878},
         opacity=0.5,
-        labels={"Number of cases": "Total_reported"},
-        title=f'{col.replace("_", " ")} on {dt}'
+        labels={"Number of cases": "Total_reported_per_100000"},
+        title=f'Total reported per 100000 on {df["Date_of_publication"].max().strftime("%d-%m-%Y")}'
+
     )
 
-    fig_map.update_layout(
-        margin={"r": 0, "t": 50, "l": 0, "b": 0})
+    fig_map_abs.update_layout(
+        margin={"r": 0, "t": 50, "l": 0, "b": 0}
+    )
 
-    return fig_map
+    return fig_map_abs
 
 
 # Callbacks
@@ -210,29 +252,27 @@ def display_choropleth(dto):
 )
 def display_choropleth_perc(dto):
     dt = dto.split("T")[0]
-    col = "Total_reported_per_100000"
-
-    fig_map = px.choropleth_mapbox(
+    fig_map_perc = px.choropleth_mapbox(
         df.loc[df["Date_of_publication"] == dt, :],
         geojson=municipalities,
         locations="Municipality_name",
         featureidkey="properties.gemeentenaam",
-        color=col,
+        color="Total_reported_per_100000",
         color_continuous_scale="Viridis",
         range_color=(0, 100),
         mapbox_style="carto-positron",
         zoom=6,
         center={"lat": 52.1561, "lon": 5.3878},
         opacity=0.5,
-        labels={"Number of cases": "Total_reported"},
-        title=f'{col.replace("_", " ")} on {dt}'
+        labels={"Number of cases": "Total_reported_per_100000"},
+        title=f'Total reported per 100000 on {df["Date_of_publication"].max().strftime("%d-%m-%Y")}'
     )
 
-    fig_map.update_layout(
+    fig_map_perc.update_layout(
         margin={"r": 0, "t": 50, "l": 0, "b": 0}
     )
 
-    return fig_map
+    return fig_map_perc
 
 
 def main(**kwargs):

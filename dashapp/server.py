@@ -16,13 +16,13 @@ server.config.suppress_callback_exceptions = True
 timeout = 300
 
 # Load data
-df = pd.read_csv(
-    r"https://data.rivm.nl/covid-19/COVID-19_aantallen_gemeente_per_dag.csv", sep=";"
-)
 # df = pd.read_csv(
-#     r"C:\Users\IvodeLiefdeTensing\Downloads\COVID-19_aantallen_gemeente_per_dag (1).csv",
-#     sep=";",
+#     r"https://data.rivm.nl/covid-19/COVID-19_aantallen_gemeente_per_dag.csv", sep=";"
 # )
+df = pd.read_csv(
+    r"C:\Users\IvodeLiefdeTensing\Downloads\COVID-19_aantallen_gemeente_per_dag (1).csv",
+    sep=";",
+)
 df["Date_of_publication"] = pd.to_datetime(df["Date_of_publication"])
 
 # CBS population data
@@ -54,7 +54,7 @@ df_total = (
 df_total["Total_reported_week"] = df_total["Total_reported"].rolling(7).mean()
 df_total["Total_reported_per_100000_week"] = df_total["Total_reported_per_100000"].rolling(7).mean()
 
-with open(join(server.static_folder, "data", "municipalities.geojson")) as f:
+with open(join(server.static_folder, "data", "municipalities_simplified.geojson")) as f:
     municipalities = json.load(f)
 
 
