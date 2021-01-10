@@ -233,7 +233,7 @@ def display_choropleth(dto):
         zoom=6,
         center={"lat": 52.1561, "lon": 5.3878},
         opacity=0.5,
-        labels={"Number of cases": "Total_reported"},
+        # labels={"Number of cases": "Total_reported"},
         title=f'Total reported on {df["Date_of_publication"].max().strftime("%d-%m-%Y")}'
 
     )
@@ -241,6 +241,8 @@ def display_choropleth(dto):
     fig_map_abs.update_layout(
         margin={"r": 0, "t": 50, "l": 0, "b": 0}
     )
+
+    fig_map_abs.layout.coloraxis.colorbar.title = ""
 
     return fig_map_abs
 
@@ -264,13 +266,15 @@ def display_choropleth_perc(dto):
         zoom=6,
         center={"lat": 52.1561, "lon": 5.3878},
         opacity=0.5,
-        labels={"Number of cases": "Total_reported_per_100000"},
+        # labels={"Number of cases": "Total_reported_per_100000"},
         title=f'Total reported per 100000 on {df["Date_of_publication"].max().strftime("%d-%m-%Y")}'
     )
 
     fig_map_perc.update_layout(
         margin={"r": 0, "t": 50, "l": 0, "b": 0}
     )
+
+    fig_map_perc.layout.coloraxis.colorbar.title = ""
 
     return fig_map_perc
 

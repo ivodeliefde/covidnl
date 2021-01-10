@@ -59,3 +59,6 @@ fig_map_perc = px.choropleth_mapbox(
 fig_map_perc.update_layout(
         margin={"r": 0, "t": 50, "l": 0, "b": 0}
     )
+
+fig_map_abs.layout.coloraxis.colorbar.title = ""
+fig_map_perc.layout.coloraxis.colorbar.title = ""
