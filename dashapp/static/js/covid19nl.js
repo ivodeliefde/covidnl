@@ -9,7 +9,7 @@ adjustLayout = function(){
     }
 };
 
-$(document).ready(adjustLayout);
 window.addEventListener('load', adjustLayout);
+window.addEventListener('DOMContentLoaded', adjustLayout);
+window.addEventListener('online', adjustLayout);
 window.addEventListener('resize', adjustLayout);
-adjustLayout();
