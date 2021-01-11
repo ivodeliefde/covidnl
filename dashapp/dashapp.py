@@ -18,10 +18,11 @@ app = dash.Dash(
     name="Covid-19 NL",
     external_stylesheets=[
         dbc.themes.JOURNAL,
-        # "https://covidnldash.herokuapp.com/styles/style.css",
-        "http://localhost:5000/styles/style.css",
+        "https://covidnldash.herokuapp.com/styles/style.css",
+        # "http://localhost:5000/styles/style.css",
     ],
     external_scripts=[
+        "https://covidnldash.herokuapp.com/js/zepto.min.js",
         "https://covidnldash.herokuapp.com/js/covid19nl.js",
     ],
     assets_folder="static",
