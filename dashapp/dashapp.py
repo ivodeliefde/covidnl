@@ -8,100 +8,24 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 import plotly.express as px
 
-from .server import df, municipalities
-
-from .server import server, cache, df, df_total
-
-
-def add_marker(fig, date, text, xshift=0, yshift=0, bgcolor="#EBFCFF"):
-    fig.add_vline(x=date, line_dash="dashdot")
-    fig.add_annotation(
-        x=date,
-        y=2000,
-        text=text,
-        showarrow=False,
-        # yshift=500,
-        xshift=xshift,
-        yshift=yshift,
-        bgcolor=bgcolor,
-    )
-
-
-fig_total = px.line(
-    df_total,
-    x="Date_of_publication",
-    y="Total_reported",
+from .server import server, cache, df, df_total, municipalities
+from .figures import (
+    create_figure_total_sum,
+    create_figure_total_abs,
+    create_figure_total_perc,
 )
-fig_total.update_layout(
-    xaxis_range=["2020-01-01", datetime.datetime.now() + datetime.timedelta(days=25)]
-)
-add_marker(fig_total, "2020-01-23", "First<br>Case EU", yshift=-30)
-add_marker(fig_total, "2020-02-27", "First<br>Case NL", yshift=5)
-add_marker(fig_total, "2020-04-23", "Intelligent<br>Lockdown", yshift=45)
-add_marker(fig_total, "2020-06-01", "Relaxing<br>Lockdown<br>Measures")
-add_marker(fig_total, "2020-10-14", "Partial<br>Lockdown", yshift=-30)
-add_marker(fig_total, "2020-12-14", "Strict<br>Lockdown")
-add_marker(
-    fig_total, "2021-01-05", "Start<br>Vaccination<br>Campaign", xshift=10, yshift=50
-)
-fig_total.add_scatter(x=df_total['Date_of_publication'],
-                      y=df_total['Total_reported_week'],
-                      mode='lines',
-                      opacity=0.7,
-                      name="Weekly Average")
-
-fig_map_abs = px.choropleth_mapbox(
-    df.loc[df["Date_of_publication"] == df["Date_of_publication"].max(), :],
-    geojson=municipalities,
-    locations="Municipality_name",
-    featureidkey="properties.gemeentenaam",
-    color= "Total_reported",
-    color_continuous_scale="Viridis",
-    range_color=(0, 100),
-    mapbox_style="carto-positron",
-    zoom=6,
-    center={"lat": 52.1561, "lon": 5.3878},
-    opacity=0.5,
-    labels={"Number of cases": "Total_reported"},
-    title=f'Total reported on {df["Date_of_publication"].max().strftime("%d-%m-%Y")}'
-)
-
-fig_map_abs.update_layout(
-        margin={"r": 0, "t": 50, "l": 0, "b": 0})
-
-# print(df["Date_of_publication"], df["Date_of_publication"].max(), df["Date_of_publication"] == df["Date_of_publication"].max())
-
-fig_map_perc = px.choropleth_mapbox(
-        df.loc[df["Date_of_publication"] == df["Date_of_publication"].max(), :],
-        geojson=municipalities,
-        locations="Municipality_name",
-        featureidkey="properties.gemeentenaam",
-        color="Total_reported_per_100000",
-        color_continuous_scale="Viridis",
-        range_color=(0, 100),
-        mapbox_style="carto-positron",
-        zoom=6,
-        center={"lat": 52.1561, "lon": 5.3878},
-        opacity=0.5,
-        labels={"Number of cases": "Total_reported_per_100000"},
-        title=f'Total reported per 100000 on {df["Date_of_publication"].max().strftime("%d-%m-%Y")}'
-    )
-
-fig_map_perc.update_layout(
-        margin={"r": 0, "t": 50, "l": 0, "b": 0}
-    )
-
 
 
 # Initialise the app
 app = dash.Dash(
+    title="Covid-19 NL",
+    name="Covid-19 NL",
     external_stylesheets=[
         dbc.themes.JOURNAL,
         "https://covidnldash.herokuapp.com/styles/style.css",
         # "http://localhost:5000/styles/style.css",
     ],
     assets_folder="static",
-    name="Covid-19 NL",
     # sharing=True,
     server=server,
     url_base_pathname="/",
@@ -131,20 +55,28 @@ app.layout = html.Div(
                             columns=[{"name": i, "id": i} for i in [" ", "Totals"]],
                             data=[
                                 {
-                                    " ": "Number of cases",
+                                    " ": "Reported cases",
                                     "Totals": df["Total_reported"].sum(),
                                 },
                                 {
-                                    " ": "Number of deceased",
+                                    " ": "Hospital admissions",
+                                    "Totals": df["Hospital_admission"].sum(),
+                                },
+                                {
+                                    " ": "Deceased",
                                     "Totals": df["Deceased"].sum(),
                                 },
                                 {
                                     " ": "Data since",
-                                    "Totals": df["Date_of_publication"].min(),
+                                    "Totals": df["Date_of_publication"]
+                                    .min()
+                                    .strftime("%d-%m-%Y"),
                                 },
                                 {
                                     " ": "Data up to",
-                                    "Totals": df["Date_of_publication"].max(),
+                                    "Totals": df["Date_of_publication"]
+                                    .max()
+                                    .strftime("%d-%m-%Y"),
                                 },
                             ],
                         )
@@ -154,10 +86,10 @@ app.layout = html.Div(
                     className="col-xl-9",
                     children=[
                         dcc.Graph(
-                            id="total_cases",
+                            id="total_figure",
                             config={"displayModeBar": False},
-                            animate=True,
-                            figure=fig_total,
+                            animate=False,
+                            figure=create_figure_total_sum(df_total),
                         ),
                     ],
                 ),
@@ -187,6 +119,36 @@ app.layout = html.Div(
                                 )
                             ],
                         ),
+                        html.Div(
+                            className="row",
+                            children=[
+                                html.H4("Select a Statistic."),
+                            ],
+                        ),
+                        html.Div(
+                            className="row columns",
+                            children=[
+                                dcc.RadioItems(
+                                    id="statistic",
+                                    options=[
+                                        {
+                                            "label": "Reported Cases",
+                                            "value": "Total_reported",
+                                        },
+                                        {
+                                            "label": "Hospital Admissions",
+                                            "value": "Hospital_admission",
+                                        },
+                                        {
+                                            "label": "Deceased",
+                                            "value": "Deceased",
+                                        },
+                                    ],
+                                    value="Total_reported",
+                                    labelStyle={"display": "block"},
+                                )
+                            ],
+                        ),
                     ],
                 ),
                 html.Div(
@@ -194,7 +156,7 @@ app.layout = html.Div(
                     children=[
                         dcc.Graph(
                             id="choropleth_abs",
-                            figure=fig_map_abs,
+                            figure=create_figure_total_abs(df),
                         )
                     ],
                 ),
@@ -203,78 +165,51 @@ app.layout = html.Div(
                     children=[
                         dcc.Graph(
                             id="choropleth_perc",
-                            figure=fig_map_perc,
+                            figure=create_figure_total_perc(df),
                         )
                     ],
                 ),
             ],
         ),
-    ]
+    ],
 )
 
 
 # Callbacks
-@app.callback(Output("choropleth_abs", "figure"), [Input("date", "date")])
-@cache.memoize(
-    # timeout=timeout   # in seconds
+# Line graph with total values
+@app.callback(Output("total_figure", "figure"), [Input("statistic", "value")])
+@cache.memoize()
+def display_total_figure(column):
+
+    fig_total = create_figure_total_sum(df_total, column)
+
+    return fig_total
+
+
+# Map with absolute values
+@app.callback(
+    Output("choropleth_abs", "figure"),
+    [Input("date", "date"), Input("statistic", "value")],
 )
-def display_choropleth(dto):
+@cache.memoize()
+def display_choropleth_abs(dto, column):
     dt = dto.split("T")[0]
 
-    fig_map_abs = px.choropleth_mapbox(
-        df.loc[df["Date_of_publication"] == dt, :],
-        geojson=municipalities,
-        locations="Municipality_name",
-        featureidkey="properties.gemeentenaam",
-        color="Total_reported",
-        color_continuous_scale="Viridis",
-        range_color=(0, 100),
-        mapbox_style="carto-positron",
-        zoom=6,
-        center={"lat": 52.1561, "lon": 5.3878},
-        opacity=0.5,
-        # labels={"Number of cases": "Total_reported"},
-        title=f'Total reported on {df["Date_of_publication"].max().strftime("%d-%m-%Y")}'
-
-    )
-
-    fig_map_abs.update_layout(
-        margin={"r": 0, "t": 50, "l": 0, "b": 0}
-    )
-
-    fig_map_abs.layout.coloraxis.colorbar.title = ""
+    fig_map_abs = create_figure_total_abs(df, dt, column)
 
     return fig_map_abs
 
 
-# Callbacks
-@app.callback(Output("choropleth_perc", "figure"), [Input("date", "date")])
-@cache.memoize(
-    # timeout=timeout   # in seconds
+# Map with values relative to the population
+@app.callback(
+    Output("choropleth_perc", "figure"),
+    [Input("date", "date"), Input("statistic", "value")],
 )
-def display_choropleth_perc(dto):
+@cache.memoize()
+def display_choropleth_perc(dto, column):
     dt = dto.split("T")[0]
-    fig_map_perc = px.choropleth_mapbox(
-        df.loc[df["Date_of_publication"] == dt, :],
-        geojson=municipalities,
-        locations="Municipality_name",
-        featureidkey="properties.gemeentenaam",
-        color="Total_reported_per_100000",
-        color_continuous_scale="Viridis",
-        range_color=(0, 100),
-        mapbox_style="carto-positron",
-        zoom=6,
-        center={"lat": 52.1561, "lon": 5.3878},
-        opacity=0.5,
-        # labels={"Number of cases": "Total_reported_per_100000"},
-        title=f'Total reported per 100000 on {df["Date_of_publication"].max().strftime("%d-%m-%Y")}'
-    )
 
-    fig_map_perc.update_layout(
-        margin={"r": 0, "t": 50, "l": 0, "b": 0}
-    )
-
-    fig_map_perc.layout.coloraxis.colorbar.title = ""
+    fig_map_perc = create_figure_total_perc(df, dt, column)
 
     return fig_map_perc
 

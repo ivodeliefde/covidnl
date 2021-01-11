@@ -14,3 +14,11 @@ html {
 #totals_table {
     vertical-align:middle;
 }
+
+#choropleth_abs, #choropleth_perc {
+    margin-top: 1vh;
+}
+
+.columns {
+    margin-top: 0.5vh;
+}

@@ -7,10 +7,13 @@ from flask import Flask, send_file
 from flask_caching import Cache
 
 server = Flask(__name__, static_folder=join(dirname(realpath(__file__)), "static"))
-cache = Cache(server, config={
-    'CACHE_TYPE': 'filesystem',
-    'CACHE_DIR': join(dirname(realpath(__file__)), "tmp")
-})
+cache = Cache(
+    server,
+    config={
+        "CACHE_TYPE": "filesystem",
+        "CACHE_DIR": join(dirname(realpath(__file__)), "tmp"),
+    },
+)
 server.config.suppress_callback_exceptions = True
 
 timeout = 300
@@ -37,24 +40,41 @@ df["Total_reported_per_100000"] = (
     / df["Bevolking/Bevolkingssamenstelling op 1 januari/Totale bevolking (aantal)"]
     * 100000
 ).fillna(0)
+df["Deceased_per_100000"] = (
+    df["Deceased"]
+    / df["Bevolking/Bevolkingssamenstelling op 1 januari/Totale bevolking (aantal)"]
+    * 100000
+).fillna(0)
+df["Hospital_admission_per_100000"] = (
+    df["Hospital_admission"]
+    / df["Bevolking/Bevolkingssamenstelling op 1 januari/Totale bevolking (aantal)"]
+    * 100000
+).fillna(0)
 
-# df_province = (
-#     df.groupby(["Date_of_publication", "Province"])[
-#         ["Date_of_publication", "Total_reported"]
-#     ]
-#     .sum()
-#     .reset_index()
-# )
+
 df_total = (
-    df.groupby(["Date_of_publication"])[["Date_of_publication", "Total_reported", "Total_reported_per_100000"]]
+    df.groupby(["Date_of_publication"])[
+        [
+            "Date_of_publication",
+            "Total_reported",
+            "Total_reported_per_100000",
+            "Hospital_admission",
+            "Hospital_admission_per_100000",
+            "Deceased",
+            "Deceased_per_100000",
+        ]
+    ]
     .sum()
     .reset_index()
 )
 
 df_total["Total_reported_week"] = df_total["Total_reported"].rolling(7).mean()
-df_total["Total_reported_per_100000_week"] = df_total["Total_reported_per_100000"].rolling(7).mean()
+df_total["Hospital_admission_week"] = df_total["Hospital_admission"].rolling(7).mean()
+df_total["Deceased_week"] = df_total["Deceased"].rolling(7).mean()
 
-with open(join(server.static_folder, "data", "municipalities_simplified_2.geojson")) as f:
+with open(
+    join(server.static_folder, "data", "municipalities_simplified_2.geojson")
+) as f:
     municipalities = json.load(f)
 
 
