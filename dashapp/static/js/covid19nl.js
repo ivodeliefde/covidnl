@@ -1,8 +1,6 @@
 
 if ($(window).width() < 1200){
-    document.getElementById("button_container").classList.add('col');
-    document.getElementById("button_container").classList.remove('row');
+    $('#button_container').addClass('row').removeClass('col');
 } else {
-    document.getElementById("button_container").classList.add('row');
-    document.getElementById("button_container").classList.remove('col');
+    $('#button_container').addClass('col').removeClass('row');
 }

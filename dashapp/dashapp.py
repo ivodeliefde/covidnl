@@ -24,6 +24,7 @@ app = dash.Dash(
     external_scripts=[
         "https://covidnldash.herokuapp.com/js/zepto.min.js",
         "https://covidnldash.herokuapp.com/js/covid19nl.js",
+        # "http://localhost:5000/js/covid19nl.js"
     ],
     assets_folder="static",
     # sharing=True,
