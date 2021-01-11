@@ -23,8 +23,8 @@ app = dash.Dash(
     ],
     external_scripts=[
         "https://covidnldash.herokuapp.com/js/zepto.min.js",
-        # "https://covidnldash.herokuapp.com/js/covid19nl.js",
-        "http://localhost:5000/js/covid19nl.js"
+        "https://covidnldash.herokuapp.com/js/covid19nl.js",
+        # "http://localhost:5000/js/covid19nl.js"
     ],
     assets_folder="static",
     # sharing=True,
@@ -44,7 +44,6 @@ app.layout = layout
 )
 @cache.memoize()
 def display_total_figure(column, options):
-    print(options)
     for opt in options:
         if opt["value"] == column:
             key = opt["label"]
