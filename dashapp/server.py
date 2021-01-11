@@ -19,13 +19,13 @@ server.config.suppress_callback_exceptions = True
 timeout = 300
 
 # Load data
-df = pd.read_csv(
-    r"https://data.rivm.nl/covid-19/COVID-19_aantallen_gemeente_per_dag.csv", sep=";"
-)
 # df = pd.read_csv(
-#     r"C:\Users\IvodeLiefdeTensing\Downloads\COVID-19_aantallen_gemeente_per_dag (1).csv",
-#     sep=";",
+#     r"https://data.rivm.nl/covid-19/COVID-19_aantallen_gemeente_per_dag.csv", sep=";"
 # )
+df = pd.read_csv(
+    r"C:\Users\IvodeLiefdeTensing\Downloads\COVID-19_aantallen_gemeente_per_dag (1).csv",
+    sep=";",
+)
 df["Date_of_publication"] = pd.to_datetime(df["Date_of_publication"])
 
 # CBS population data
@@ -82,3 +82,9 @@ with open(
 def send_css():
     filepath = join(server.static_folder, "styles", "style.css")
     return send_file(filepath, attachment_filename="style.css")
+
+@server.route("/js/covid19nl.js")
+def send_js():
+    filepath = join(server.static_folder, "js", "covid19nl.js")
+    return send_file(filepath, attachment_filename="covid19nl.js")
+

@@ -16,7 +16,8 @@ def add_marker(fig, date, text, xshift=0, yshift=0, bgcolor="#EBFCFF", y=2000):
         bgcolor=bgcolor,
     )
 
-def create_figure_total_sum(df_total, column="Total_reported"):
+
+def create_figure_total_sum(df_total, column="Total_reported", key="Reported Cases"):
 
     fig_total = px.line(
         df_total,
@@ -29,7 +30,7 @@ def create_figure_total_sum(df_total, column="Total_reported"):
             "2020-01-01",
             datetime.datetime.now() + datetime.timedelta(days=25),
         ],
-        yaxis_range=[df_total[column].max()*-0.1, df_total[column].max()*1.15]
+        yaxis_range=[df_total[column].max() * -0.1, df_total[column].max() * 1.15],
     )
     fig_total.add_scatter(
         x=df_total["Date_of_publication"],
@@ -50,9 +51,17 @@ def create_figure_total_sum(df_total, column="Total_reported"):
 
     add_marker(fig_total, "2020-01-23", "First<br>Case EU", yshift=-30, y=y)
     add_marker(fig_total, "2020-02-27", "First<br>Case NL", yshift=5, y=y)
-    add_marker(fig_total, "2020-04-23", "Intelligent<br>Lockdown", yshift=45+extra_y_shift, y=y)
+    add_marker(
+        fig_total,
+        "2020-04-23",
+        "Intelligent<br>Lockdown",
+        yshift=45 + extra_y_shift,
+        y=y,
+    )
     add_marker(fig_total, "2020-06-01", "Relaxing<br>Lockdown<br>Measures", y=y)
-    add_marker(fig_total, "2020-10-14", "Partial<br>Lockdown", yshift=-30+extra_y_shift, y=y)
+    add_marker(
+        fig_total, "2020-10-14", "Partial<br>Lockdown", yshift=-30 + extra_y_shift, y=y
+    )
     add_marker(fig_total, "2020-12-14", "Strict<br>Lockdown", y=y)
     add_marker(
         fig_total,
@@ -60,7 +69,13 @@ def create_figure_total_sum(df_total, column="Total_reported"):
         "Start<br>Vaccination<br>Campaign",
         xshift=10,
         yshift=50,
-        y = y
+        y=y,
+    )
+
+    fig_total.update_layout(
+        title=f"Development of {key.lower()} since Feb 27, 2020",
+        xaxis_title="Date",
+        yaxis_title=column.replace("_", " "),
     )
 
     return fig_total
@@ -88,7 +103,7 @@ def create_figure_total_abs(df, dt=None, column="Total_reported"):
         featureidkey="properties.gemeentenaam",
         color=column,
         color_continuous_scale="Viridis",
-        range_color=(0, max_range-1),
+        range_color=(0, max_range - 1),
         mapbox_style="carto-positron",
         zoom=6,
         center={"lat": 52.1561, "lon": 5.3878},
@@ -100,8 +115,15 @@ def create_figure_total_abs(df, dt=None, column="Total_reported"):
     fig_map_abs.update_layout(margin={"r": 0, "t": 35, "l": 0, "b": 0})
 
     fig_map_abs.layout.coloraxis.colorbar.title = ""
-    fig_map_abs.layout.coloraxis.colorbar.tickvals = [i for i in range(0, max_range, steps)]
-    fig_map_abs.layout.coloraxis.colorbar.ticktext = [f">{x}" if i == len(fig_map_abs.layout.coloraxis.colorbar.tickvals)-1 else f"{x}"  for i,x in enumerate(range(0, max_range, steps))]
+    fig_map_abs.layout.coloraxis.colorbar.tickvals = [
+        i for i in range(0, max_range, steps)
+    ]
+    fig_map_abs.layout.coloraxis.colorbar.ticktext = [
+        f">{x}"
+        if i == len(fig_map_abs.layout.coloraxis.colorbar.tickvals) - 1
+        else f"{x}"
+        for i, x in enumerate(range(0, max_range, steps))
+    ]
 
     return fig_map_abs
 
@@ -129,7 +151,7 @@ def create_figure_total_perc(df, dt=None, column="Total_reported"):
         featureidkey="properties.gemeentenaam",
         color=f"{column}_per_100000",
         color_continuous_scale="Viridis",
-        range_color=(0, max_range-1),
+        range_color=(0, max_range - 1),
         mapbox_style="carto-positron",
         zoom=6,
         center={"lat": 52.1561, "lon": 5.3878},
@@ -141,9 +163,14 @@ def create_figure_total_perc(df, dt=None, column="Total_reported"):
     fig_map_perc.update_layout(margin={"r": 0, "t": 35, "l": 0, "b": 0})
 
     fig_map_perc.layout.coloraxis.colorbar.title = ""
-    fig_map_perc.layout.coloraxis.colorbar.tickvals = [i for i in range(0, max_range, steps)]
+    fig_map_perc.layout.coloraxis.colorbar.tickvals = [
+        i for i in range(0, max_range, steps)
+    ]
     fig_map_perc.layout.coloraxis.colorbar.ticktext = [
-        f">{x}" if i == len(fig_map_perc.layout.coloraxis.colorbar.tickvals) - 1 else f"{x}" for i, x in
-        enumerate(range(0, max_range, steps))]
+        f">{x}"
+        if i == len(fig_map_perc.layout.coloraxis.colorbar.tickvals) - 1
+        else f"{x}"
+        for i, x in enumerate(range(0, max_range, steps))
+    ]
 
     return fig_map_perc
