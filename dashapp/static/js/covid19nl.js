@@ -1,4 +1,4 @@
-window.addEventListener('load', function () {
+$(document).ready(function(){
     if ($(window).width() < 1200){
         $('#button_container').addClass('row').removeClass('col');
     } else {
