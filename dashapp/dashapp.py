@@ -35,6 +35,7 @@ app = dash.Dash(
 
 app.layout = layout
 app.scripts.config.serve_locally = True
+app.scripts.config.serve = True
 app.scripts.get_all_scripts()
 
 # Callbacks
