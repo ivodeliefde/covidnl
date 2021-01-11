@@ -83,13 +83,14 @@ def send_css():
     filepath = join(server.static_folder, "styles", "style.css")
     return send_file(filepath, attachment_filename="style.css")
 
+
 @server.route("/js/covid19nl.js")
 def send_js():
     filepath = join(server.static_folder, "js", "covid19nl.js")
     return send_file(filepath, attachment_filename="covid19nl.js")
 
+
 @server.route("/js/zepto.min.js")
 def send_zepto():
     filepath = join(server.static_folder, "js", "zepto.min.js")
     return send_file(filepath, attachment_filename="zepto.min.js")
-
