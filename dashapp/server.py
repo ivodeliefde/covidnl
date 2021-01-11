@@ -89,7 +89,7 @@ def send_js():
     return send_file(filepath, attachment_filename="covid19nl.js")
 
 @server.route("/js/zepto.min.js")
-def send_js():
+def send_zepto():
     filepath = join(server.static_folder, "js", "zepto.min.js")
     return send_file(filepath, attachment_filename="zepto.min.js")
 
