@@ -9,7 +9,5 @@ adjustLayout = function(){
     }
 };
 
-window.addEventListener('load', adjustLayout);
-window.addEventListener('DOMContentLoaded', adjustLayout);
-window.addEventListener('online', adjustLayout);
+adjustLayout();
 window.addEventListener('resize', adjustLayout);
