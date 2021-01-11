@@ -19,13 +19,13 @@ server.config.suppress_callback_exceptions = True
 timeout = 300
 
 # Load data
-# df = pd.read_csv(
-#     r"https://data.rivm.nl/covid-19/COVID-19_aantallen_gemeente_per_dag.csv", sep=";"
-# )
 df = pd.read_csv(
-    r"C:\Users\IvodeLiefdeTensing\Downloads\COVID-19_aantallen_gemeente_per_dag (1).csv",
-    sep=";",
+    r"https://data.rivm.nl/covid-19/COVID-19_aantallen_gemeente_per_dag.csv", sep=";"
 )
+# df = pd.read_csv(
+#     r"C:\Users\IvodeLiefdeTensing\Downloads\COVID-19_aantallen_gemeente_per_dag (1).csv",
+#     sep=";",
+# )
 df["Date_of_publication"] = pd.to_datetime(df["Date_of_publication"])
 
 # CBS population data
