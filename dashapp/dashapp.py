@@ -23,7 +23,7 @@ app = dash.Dash(
     ],
     external_scripts=[
         "https://covidnldash.herokuapp.com/js/zepto.min.js",
-        # "https://covidnldash.herokuapp.com/js/covid19nl.js",
+        "https://covidnldash.herokuapp.com/js/covid19nl.js",
         # "http://localhost:5000/js/covid19nl.js"
     ],
     assets_folder="static",
@@ -34,8 +34,8 @@ app = dash.Dash(
 
 
 app.layout = layout
-app.scripts.append_script({"external_url": "https://covidnldash.herokuapp.com/js/covid19nl.js"})
-
+app.scripts.config.serve_locally = True
+app.scripts.get_all_scripts()
 
 # Callbacks
 # Line graph with total values
