@@ -9,5 +9,5 @@ var adjustLayout = function(){
     }
 };
 
-adjustLayout();
+$('#button_container').ready(adjustLayout);
 window.addEventListener('resize', adjustLayout);
