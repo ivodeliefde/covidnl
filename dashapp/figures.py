@@ -68,7 +68,7 @@ def create_figure_total_sum(df_total, column="Total_reported", key="Reported Cas
         "2021-01-05",
         "Start<br>Vaccination<br>Campaign",
         xshift=10,
-        yshift=50,
+        yshift=220,
         y=y,
     )
 
@@ -93,8 +93,8 @@ def create_figure_total_abs(df, dt=None, column="Total_reported"):
         max_range = 6
         steps = 1
     elif column == "Hospital_admission":
-        max_range = 21
-        steps = 5
+        max_range = 11
+        steps = 2
 
     fig_map_abs = px.choropleth_mapbox(
         df.loc[df["Date_of_publication"] == dt, :],
@@ -141,8 +141,8 @@ def create_figure_total_perc(df, dt=None, column="Total_reported"):
         max_range = 6
         steps = 1
     elif column == "Hospital_admission":
-        max_range = 21
-        steps = 5
+        max_range = 11
+        steps = 2
 
     fig_map_perc = px.choropleth_mapbox(
         df.loc[df["Date_of_publication"] == dt, :],
